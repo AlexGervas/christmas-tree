@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as THREE from 'three'
 import { DecorationComponent } from "../decoration/decoration.component";
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 @Component({
   selector: 'app-tree',
@@ -15,6 +16,7 @@ export class TreeComponent implements OnInit, OnDestroy {
   scene!: THREE.Scene;
   camera!: THREE.PerspectiveCamera;
   renderer!: THREE.WebGLRenderer;
+  controls!: OrbitControls;
   levels = 5;
 
   ngOnInit(): void {
@@ -36,9 +38,12 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.renderer = new THREE.WebGLRenderer({ alpha: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.canvasContainer.nativeElement.appendChild(this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     this.createTree();
     this.createTrunk();
+
+    this.animatedOrbitControls();
   }
 
   private createTree(): void {
@@ -50,10 +55,11 @@ export class TreeComponent implements OnInit, OnDestroy {
 
   // Создание ствола
   private createTrunk(): void {
-    const trunkGeometry = new THREE.BoxGeometry(0.2, 0.5, 0.2);
+    const trunkHeight = 1.0;
+    const trunkGeometry = new THREE.BoxGeometry(0.2, trunkHeight, 0.2);
     const trunkMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 });
     const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-    trunk.position.y = -2;
+    trunk.position.y = -2 + trunkHeight / 2;
     this.scene.add(trunk);
   }
 
@@ -61,6 +67,12 @@ export class TreeComponent implements OnInit, OnDestroy {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  private animatedOrbitControls(): void {
+    requestAnimationFrame(() => this.animatedOrbitControls());
+    this.controls.update();
+    this.renderer.render(this.scene, this.camera);
   }
 
 }
