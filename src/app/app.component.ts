@@ -6,7 +6,7 @@ import { DecorationComponent } from "./decoration/decoration.component";
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TreeComponent, DecorationComponent],
+  imports: [RouterOutlet, TreeComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
